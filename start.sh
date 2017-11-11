@@ -1,2 +1,2 @@
-cd Schreibtisch/Lüfter_Steuerung
+cd /home/till/Luefter_Steuerung
 python main.py
