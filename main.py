@@ -4,6 +4,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 import os
 import time
+import RPi.GPIO as GPIO
 
 global temp_sensor_1
 global temp_sensor_2
@@ -30,9 +31,14 @@ def read_temp(sensor):
         temp_string=lines[1].strip()[temp_output+2:]
         temp_c=float(temp_string)/1000
         return temp_c
+        
+def StarteLuefter():
+    GPIO.output(18,  GPIO.HIGH)
+    
+def StoppeLuefter():
+    GPIO.output(18,  GPIO.LOW)
 
 class MyApp (object):
-
 
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -43,12 +49,27 @@ class MyApp (object):
         self.builder.get_object("window1").show_all()
         os.system('modprobe w1-gpio')
         os.system('modprobe w1-therm')
+        #Init GPIO Pins
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(18,  GPIO.OUT)
         self.start_temp_request()
         Gtk.main()
 
     def on_window1_destroy(self, *args):
         Gtk.main_quit()
+    
+    #================
+    #Handle   
+    #================
+    def on_start_click(self,  button):
+        StarteLuefter()
         
+    def on_stop_click(self,  button):
+        StoppeLuefter()
+     
+    #================
+    #Temp Sensor Functions
+    #================
     def temp_request_1(self):
         Temp_Field_1=self.builder.get_object('Temp1')
         Temp_Field_1.set_property('text', str(read_temp('S1')))
